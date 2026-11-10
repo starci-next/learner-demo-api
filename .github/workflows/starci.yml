@@ -1,0 +1,29 @@
+# Bản mẫu do AI viết (nháp): GitHub Actions cho dự án TypeScript. Chép vào .github/workflows/starci.yml.
+# Secret cần tạo trong GitHub (chỉ tên, KHÔNG ghi giá trị vào repo): STARCI_PROJECT_ID, STARCI_CI_SECRET. Biến (vars): STARCI_API_URL.
+name: starci
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+  id-token: write # token OIDC của GitHub; StarCi dùng để chứng thực lần chạy
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npm ci
+      - name: Test, ghi JUnit XML
+        run: node --test --test-reporter=junit --test-reporter-destination=starci/reports/junit.xml
+        # vitest: npx vitest run --reporter=junit --outputFile=starci/reports/junit.xml
+        # jest: npx jest --reporters=jest-junit (đặt JEST_JUNIT_OUTPUT_FILE=starci/reports/junit.xml)
+      - name: Gửi kết quả cho StarCi
+        if: always()
+        run: node starci/report.mjs starci/reports
+        env:
+          STARCI_API_URL: ${{ vars.STARCI_API_URL }}
+          STARCI_PROJECT_ID: ${{ secrets.STARCI_PROJECT_ID }}
+          STARCI_CI_SECRET: ${{ secrets.STARCI_CI_SECRET }}

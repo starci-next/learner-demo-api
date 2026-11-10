@@ -1,0 +1,32 @@
+# Bản mẫu do AI viết (nháp). `starci-next init` chép file này vào starci/ của dự án và điền project + language; học viên sửa test, start và endpoints cho đúng dự án của mình.
+schema: starci-next-data/project-kit@1
+status: draft
+author: ai-placeholder
+# id dự án do StarCi cấp (lệnh init điền). Bí mật CI KHÔNG nằm ở đây: nó nằm ở secret STARCI_CI_SECRET của GitHub.
+project: "912e8d04-8e15-48bf-9af1-56553e4822ea"
+# typescript | java | csharp | go
+language: typescript
+test:
+  # Lệnh chạy test và PHẢI ghi JUnit XML vào report. Lệnh mẫu theo ngôn ngữ nằm trong starci/README.vi.md.
+  command: node --test --test-reporter=junit --test-reporter-destination=starci/reports/junit.xml
+  report: starci/reports/junit.xml
+start:
+  # Lệnh chạy dịch vụ và địa chỉ gốc để probe gọi (probe của server chỉ gọi địa chỉ công khai http/https).
+  command: npm start
+  baseUrl: http://localhost:3000
+# concept -> endpoint mà probe gọi, dạng "METHOD /path". `body` là JSON mẫu (chuỗi) cho probe cần body;
+# probe của agent cần body có chỗ {{message}}. Chỉ khai concept mà dự án của bạn thật sự làm.
+endpoints:
+  request-response-lifecycle:
+    endpoint: POST /orders
+    body: '{"item":"book","quantity":1}'
+  health-probe-semantics:
+    endpoint: GET /health
+  server-state-cache-lifecycle:
+    endpoint: GET /products
+  transactions-and-isolation:
+    endpoint: POST /orders
+    body: '{"item":"last-book","quantity":1}'
+  idempotency:
+    endpoint: POST /payments
+    body: '{"orderId":"o-1","amount":1000}'

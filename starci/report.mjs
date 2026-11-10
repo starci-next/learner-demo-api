@@ -2,7 +2,7 @@
 // Đọc JUnit XML, lấy test có [concept] trong tên, ký HMAC-SHA256 và POST tới /webhooks/project-ci.
 // Biến môi trường (chỉ tên, giá trị nằm trong secret của GitHub): STARCI_API_URL, STARCI_PROJECT_ID, STARCI_CI_SECRET.
 import { createHmac } from "node:crypto"
-import { readFileSync, readdirSync, statSync } from "node:fs"
+import { existsSync, readFileSync, readdirSync, statSync } from "node:fs"
 import { join } from "node:path"
 
 const env = (name) => {
@@ -20,6 +20,10 @@ const reportsOf = (dir) =>
 
 const dir = process.argv[2] ?? "starci/reports"
 const byTest = new Map()
+if (!existsSync(dir)) {
+    console.error(`StarCi CI: không có thư mục report ${dir}: bước test chưa ghi JUnit XML`)
+    process.exit(1)
+}
 for (const file of reportsOf(dir)) {
     const xml = readFileSync(file, "utf8")
     for (const match of xml.matchAll(/<testcase\b([^>]*?)(\/>|>([\s\S]*?)<\/testcase>)/g)) {

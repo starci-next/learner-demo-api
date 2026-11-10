@@ -16,6 +16,8 @@ jobs:
         with:
           node-version: 24
       - run: npm ci
+      - name: Tạo thư mục report (bị gitignore nên runner chưa có)
+        run: mkdir -p starci/reports
       - name: Test, ghi JUnit XML
         run: node --test --test-reporter=junit --test-reporter-destination=starci/reports/junit.xml
         # vitest: npx vitest run --reporter=junit --outputFile=starci/reports/junit.xml

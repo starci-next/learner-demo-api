@@ -1,0 +1,10 @@
+{
+  "name": "learner-demo-api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Dev fixture: a learner's tiny orders and payments API. Never part of the content repo.",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test"
+  }
+}
